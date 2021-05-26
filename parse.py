@@ -12,7 +12,7 @@ class Parser(object):
         """Функция парсинга документа"""
 
         level = 0
-        curr_head = head = Heading("Main", "Main")
+        curr_head = head = Heading("Main", "Main", [], None)
         for par in self.paragraphs:
             if par.text != "":
                 par.text = ''.join([c for c in par.text if c not in self.unwanted_chars])

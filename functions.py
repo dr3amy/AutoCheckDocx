@@ -5,16 +5,9 @@ from parse import Parser
 
 
 def get_paths(folder):
-    """Возрващает список путей к файлам .docx. Файлы лежат в той же директории, что и скрипт."""
+    """Возрващает список путей к файлам .docx в заданной директории."""
 
-    # paths = []
     # folder = os.getcwd()
-    # for root, dirs, files in os.walk(folder):
-    #     for file in files:
-    #         if file.endswith('docx') and not file.startswith('~') and not file.startswith('default'):
-    #             paths.append(os.path.join(root, file))
-    # return paths
-
     paths = []
     for root, dirs, files in os.walk(folder):
         for file in files:
@@ -71,7 +64,7 @@ def parse_docs():
         parsed_data = parser.parse()
         data.append(parsed_data)
         print(json.dumps(Parser.to_json(parsed_data), indent=4, ensure_ascii=False))
-        outfile = path.split('/')[-1].split('.')[0] + '.json'
+        outfile = path.split('/')[-1].split(".")[0] + ".json"
         parser.to_json_file(f"./ParsedResults//{outfile}")
     return data
 
