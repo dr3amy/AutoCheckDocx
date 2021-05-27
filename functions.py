@@ -72,3 +72,7 @@ def parse_docs():
 def test_to_json(data, path):
     with open(path, 'w', encoding='utf-8') as outfile:
         json.dump(data, outfile, indent=4, ensure_ascii=False)
+
+
+def calc_result(check_headings, check_bodies):
+    pass
