@@ -5,12 +5,12 @@ class Heading(object):
         """Коснтруктор"""
 
         self.head = head
-        self.type = text_type
+        self.text_type = text_type
         self.content = content
         self.parent = parent
 
     def __str__(self):
-        return f"<{self.head}, '{self.type}', {self.content}>"
+        return f"<{self.head}, '{self.text_type}', {self.content}>"
 
     def __repr__(self):
-        return f"<{self.head}, '{self.type}', {self.content}>"
+        return f"<{self.head}, '{self.text_type}', {self.content}>"

@@ -34,7 +34,7 @@ def get_paragraphs_single(path):
 
 
 def get_pattern(filename):
-    """Чтение .json"""
+    """Чтение шаблона в формате .json"""
 
     with open(filename, encoding='utf-8') as json_file:
         data = json.load(json_file)
@@ -74,5 +74,21 @@ def test_to_json(data, path):
         json.dump(data, outfile, indent=4, ensure_ascii=False)
 
 
-def calc_result(check_headings, check_bodies):
-    pass
+def calc_result(headings_check, bodies_check):
+    """Результат всех проверок -- линейная комбинация всех показателей"""
+
+    missing_partitions = headings_check['missing partitions']
+    unordered_number = headings_check['number of unordered partitions']
+    headings_avg = sum(headings_check.values()) / len(headings_check)
+    bodies_avg = sum(bodies_check.values()) / len(bodies_check)
+    partitions_k = 0.5
+    unordered_k = 0.5
+    headings_k = 0.5
+    bodies_k = 0.4
+    values_list = [
+        missing_partitions * partitions_k,
+        unordered_number * unordered_k,
+        headings_avg * headings_k,
+        bodies_avg * bodies_k
+    ]
+    return sum(values_list)

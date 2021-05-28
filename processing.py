@@ -58,7 +58,7 @@ def headings_sim(nlp, fact_headings, patt_headings):
         nlp_fact = nlp(process_text(nlp, fact))
         for patt in patt_headings:
             nlp_patt = nlp(process_text(nlp, patt))
-            sims.append((patt, nlp_fact.similarity(nlp_patt)))
+            sims.append((patt, round(nlp_fact.similarity(nlp_patt), 2)))
         result.append((fact,  max(sims, key=itemgetter(1))))
     return result
 
@@ -70,12 +70,12 @@ def check_headings(nlp, data, pattern):
     fact_headings = [elem.head for elem in data]
     patt_headings = list(pattern.keys())
     missing_headings = len(patt_headings) - len(fact_headings)
-    result.append(("missing partitions: ", missing_headings))
+    result.append(("missing partitions", missing_headings))
     transpositions = 0
     for fact, patt in zip(fact_headings, patt_headings):
         if fact != patt:
             transpositions += 1
-    result.append(("order metric: ", int(transpositions/2)))
+    result.append(("number of unordered partitions", int(transpositions/2)))
     heads_sim = headings_sim(nlp, fact_headings, patt_headings)
     for pair in heads_sim:
         result.append((pair[0] + " <-> " + pair[1][0], pair[1][1]))
@@ -104,7 +104,7 @@ def check_bodies(nlp, data, pattern):
                     doc1 = nlp(temp)
                     doc2 = nlp(lem)
                     try:
-                        similarities.append((temp + " <-> " + lem, doc1.similarity(doc2)))
+                        similarities.append((temp + " <-> " + lem, round(doc1.similarity(doc2), 2)))
                     except UserWarning as uw:
                         print(f"{temp}, {lem}: {uw}")
             # print(f"body #{i+1}\n", similarities)
