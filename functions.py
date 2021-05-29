@@ -81,14 +81,11 @@ def calc_result(headings_check, bodies_check):
     unordered_number = headings_check['number of unordered partitions']
     headings_avg = sum(headings_check.values()) / len(headings_check)
     bodies_avg = sum(bodies_check.values()) / len(bodies_check)
-    partitions_k = 0.5
-    unordered_k = 0.5
-    headings_k = 0.5
-    bodies_k = 0.4
+
     values_list = [
-        missing_partitions * partitions_k,
-        unordered_number * unordered_k,
-        headings_avg * headings_k,
-        bodies_avg * bodies_k
+        missing_partitions * 0.5,
+        unordered_number * 0.5,
+        headings_avg * 0.5,
+        bodies_avg * 0.4
     ]
     return sum(values_list)
