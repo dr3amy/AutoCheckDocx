@@ -10,7 +10,7 @@ class Heading(object):
         self.parent = parent
 
     def __str__(self):
-        return f"<{self.head}, '{self.head_type}', {self.content}>"
+        return f"<{self.head}, {self.head_type}, {self.content}>"
 
     def __repr__(self):
-        return f"<{self.head}, '{self.head_type}', {self.content}>"
+        return f"<'{self.head}', '{self.head_type}', '{self.content}'>"
