@@ -1,6 +1,6 @@
 {
-    "missing partitions: ": 0,
-    "order metric: ": 0,
+    "missing partitions": 0,
+    "number of unordered partitions": 0,
     "Введение <-> Введение": 1.0,
     "Организация выполнения <-> Организация выполнения": 1.0,
     "Анализ рисков <-> Анализ рисков": 1.0,
