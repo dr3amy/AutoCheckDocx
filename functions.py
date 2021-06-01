@@ -83,9 +83,9 @@ def calc_result(headings_check, bodies_check):
     bodies_avg = sum(bodies_check.values()) / len(bodies_check)
 
     values_list = [
-        missing_partitions * 0.5,
-        unordered_number * 0.5,
-        headings_avg * 0.5,
-        bodies_avg * 0.4
+        missing_partitions * (-0.2),
+        unordered_number * (-0.15),
+        headings_avg * 0.6,
+        bodies_avg * 0.5
     ]
-    return sum(values_list)
+    return round(sum(values_list), 2)
