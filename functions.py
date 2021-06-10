@@ -77,8 +77,8 @@ def test_to_json(data, path):
 def calc_result(headings_check, bodies_check):
     """Результат всех проверок -- линейная комбинация всех показателей"""
 
-    missing_partitions = headings_check['missing partitions']
-    unordered_number = headings_check['number of unordered partitions']
+    missing_partitions = headings_check['missing sections']
+    unordered_number = headings_check['number of unordered sections']
     headings_avg = sum(headings_check.values()) / len(headings_check)
     bodies_avg = sum(bodies_check.values()) / len(bodies_check)
 

@@ -67,15 +67,21 @@ def check_headings(nlp, data, pattern):
     """Проверка заголовков на совпадение шаблону"""
 
     result = []
-    fact_headings = [elem.head for elem in data]
+    fact_headings = []
+    for head in data:
+        if isinstance(head, Heading):
+            fact_headings.append(head.head)
+    # fact_headings = [elem.head for elem in data]
     patt_headings = list(pattern.keys())
-    missing_headings = len(patt_headings) - len(fact_headings)
-    result.append(("missing partitions", missing_headings))
+    missing_headings = 0
+    if len(fact_headings) < len(patt_headings):
+        missing_headings = len(patt_headings) - len(fact_headings)
+    result.append(("missing sections", missing_headings))
     transpositions = 0
     for fact, patt in zip(fact_headings, patt_headings):
         if fact != patt:
             transpositions += 1
-    result.append(("number of unordered partitions", int(transpositions/2)))
+    result.append(("number of unordered sections", int(transpositions/2)))
     heads_sim = headings_sim(nlp, fact_headings, patt_headings)
     for pair in heads_sim:
         result.append((pair[0] + " <-> " + pair[1][0], pair[1][1]))
@@ -108,20 +114,21 @@ def check_bodies(nlp, data, pattern):
                     except UserWarning as uw:
                         print(f"{temp}, {lem}: {uw}")
             # print(f"body #{i+1}\n", similarities)
-        result.append((f"body #{i+1}", max(similarities, key=itemgetter(1))[1]))
+        if len(similarities) != 0:
+            result.append((f"body #{i+1}", max(similarities, key=itemgetter(1))[1]))
+        else:
+            result.append((f"body #{i+1}", 0))
         i += 1
     return dict(result)
 
 
-def test(data, pattern):
+def test():
     nlp = spacy.load('ru_core_news_lg')
-    headings = [key for key in pattern]
-    bodies = [value for value in pattern]
 
     # print(nlp.Defaults.stop_words)
 
-    text1 = process_text(nlp, "собрание")
-    text2 = process_text(nlp, "этап")
+    text1 = process_text(nlp, "исполнители")
+    text2 = process_text(nlp, "организация выполнения")
     print(text1, text2)
 
     doc1 = nlp(text1)
