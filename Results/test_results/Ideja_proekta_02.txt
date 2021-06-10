@@ -1,0 +1,2 @@
+right_pattern_1.json
+-0.15
