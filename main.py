@@ -5,8 +5,8 @@ from processing import *
 if __name__ == "__main__":
 
     # filepath = ".\\Кафтанов_1_без_таблицы.docx"
-    # filepath = ".\\Тестовые документы_10шт\\1\\Ideja_proekta_02.docx"
-    filepath = ".\\Тестовые документы_10шт\\1\\Plan_proekta_01.docx"
+    filepath = ".\\Тестовые документы_10шт\\1\\Ideja_proekta_02.docx"
+    # filepath = ".\\Тестовые документы_10шт\\1\\Plan_proekta_01.docx"
     pattern_path = "patterns\\right_pattern_1.json"
     pattern = get_pattern(pattern_path)
     doc = parse_doc(filepath, ".\\ParsedResults")
@@ -28,10 +28,10 @@ if __name__ == "__main__":
     test_to_json(bodies_check, test_bodies_path)
 
     result = calc_result(heads_check, bodies_check)
-    print("similarity: ", result)
+    print("similarity: ", str(int(result * 100)) + "%")
     # result_file = ".\\Results" + filepath.split(".")[1] + ".txt"
     result_file = ".\\Results\\test_results\\" + filepath.split("\\")[-1].split(".")[0] + ".txt"
-    lines = [pattern_path.split("\\")[1], '\n', str(result)]
+    lines = [pattern_path.split("\\")[1], '\n', str((int(result * 100))) + "%"]
     with open(result_file, "w") as file:
         file.writelines(lines)
 
