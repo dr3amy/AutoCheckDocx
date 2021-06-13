@@ -4,8 +4,8 @@ from processing import *
 
 if __name__ == "__main__":
 
-    # filepath = ".\\Кафтанов_1_без_таблицы.docx"
-    filepath = ".\\Тестовые документы_10шт\\1\\Ideja_proekta_02.docx"
+    filepath = ".\\Кафтанов_1_без_таблицы.docx"
+    # filepath = ".\\Тестовые документы_10шт\\1\\Ideja_proekta_02.docx"
     # filepath = ".\\Тестовые документы_10шт\\1\\Plan_proekta_01.docx"
     pattern_path = "patterns\\right_pattern_1.json"
     pattern = get_pattern(pattern_path)
