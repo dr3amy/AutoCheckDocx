@@ -77,15 +77,21 @@ def test_to_json(data, path):
 def calc_result(headings_check, bodies_check):
     """Результат всех проверок -- линейная комбинация всех показателей"""
 
-    missing_partitions = headings_check['missing sections']
-    unordered_number = headings_check['number of unordered sections']
-    headings_avg = sum(headings_check.values()) / len(headings_check)
-    bodies_avg = sum(bodies_check.values()) / len(bodies_check)
+    missing_partitions = headings_check['sections presence']
+    unordered_number = headings_check['ordered sections']
+    if len(headings_check) > 2:
+        headings_avg = sum(list(headings_check.values())[2:]) / (len(headings_check) - 2)
+    else:
+        headings_avg = 0
+    if len(bodies_check) > 0:
+        bodies_avg = sum(bodies_check.values()) / len(bodies_check)
+    else:
+        bodies_avg = 0
 
     values_list = [
-        missing_partitions * (-0.2),
-        unordered_number * (-0.15),
-        headings_avg * 0.6,
-        bodies_avg * 0.5
+        missing_partitions * 0.4,
+        unordered_number * 0.3,
+        headings_avg * 0.2,
+        bodies_avg * 0.1
     ]
     return round(sum(values_list), 2)
