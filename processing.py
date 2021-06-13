@@ -49,6 +49,18 @@ def process_text(nlp, text):
     return " ".join(result)
 
 
+def process_doc(data, pattern):
+    """Игнорирование разделов, которые не требуются в шаблоне"""
+
+    patt_headings = list(pattern.keys())
+    fact_sections = []
+    for head in data:
+        if isinstance(head, Heading):
+            if head.head in patt_headings:
+                fact_sections.append(head)
+    return fact_sections
+
+
 def headings_sim(nlp, fact_headings, patt_headings):
     """Возвращает список лучших совпадений фактических разделов с разделами шаблона"""
 
@@ -67,21 +79,32 @@ def check_headings(nlp, data, pattern):
     """Проверка заголовков на совпадение шаблону"""
 
     result = []
-    fact_headings = []
-    for head in data:
-        if isinstance(head, Heading):
-            fact_headings.append(head.head)
-    # fact_headings = [elem.head for elem in data]
     patt_headings = list(pattern.keys())
-    missing_headings = 0
-    if len(fact_headings) < len(patt_headings):
-        missing_headings = len(patt_headings) - len(fact_headings)
-    result.append(("missing sections", missing_headings))
+    # оставляю только те разделы, которые присутствуют в шаблоне
+    # ВАЖНО! в проверку на соответствие так же передаётся список без лишних заголовков
+    proc_data = process_doc(data, pattern)
+    fact_headings = [sect.head for sect in proc_data]
+    if len(fact_headings) > 0:
+        present_headings = round(len(fact_headings) / len(patt_headings), 2)
+    else:
+        present_headings = 0
+    result.append(("sections presence", present_headings))
+
+    metric = 0
     transpositions = 0
-    for fact, patt in zip(fact_headings, patt_headings):
-        if fact != patt:
-            transpositions += 1
-    result.append(("number of unordered sections", int(transpositions/2)))
+    if len(fact_headings) > 1:
+        p = 0
+        q = 0
+        for i in range(0, len(fact_headings) - 1):
+            p = patt_headings.index(fact_headings[i])
+            for j in range(i + 1, len(fact_headings)):
+                q = patt_headings.index(fact_headings[j])
+                if p > q:
+                    transpositions += 1
+        max_transpositions = len(fact_headings) * (len(fact_headings) - 1) / 2
+        metric = 1 - transpositions / max_transpositions
+
+    result.append(("ordered sections", round(metric, 2)))
     heads_sim = headings_sim(nlp, fact_headings, patt_headings)
     for pair in heads_sim:
         result.append((pair[0] + " <-> " + pair[1][0], pair[1][1]))
@@ -89,35 +112,51 @@ def check_headings(nlp, data, pattern):
     return dict(result)
 
 
+def order_sections(data, pattern):
+    """Возвращает упорядоченный список разделов документа"""
+
+    patt_headings = list(pattern.keys())
+    proc_data = process_doc(data, pattern)
+    ordered_data = ["dummy"] * len(patt_headings)
+    for head in proc_data:
+        ind = patt_headings.index(head.head)
+        ordered_data[ind] = head
+    return ordered_data
+
+
 def check_bodies(nlp, data, pattern):
     """Проверка содержаний на совпадение шаблону"""
 
     result = []
     patt_bodies = list(pattern.values())
+    ordered_data = order_sections(data, pattern)
     i = 0
-    for head in data:
-        # print(head)
+    for section in ordered_data:
+        f = False
         patt_lst = patt_bodies[i]
-        body = reduce_list(bodies_search(head))  # из вложенных списков генерируется один общий
-        # print(body)
-        for text in body:
-            proc_text = process_text(nlp, text)
-            fact_lemmas = list(filter(None, [elem for elem in proc_text.split()]))
-            similarities = []
-            for patt in patt_lst:
-                for lem in fact_lemmas:
-                    temp = process_text(nlp, patt)
-                    doc1 = nlp(temp)
-                    doc2 = nlp(lem)
-                    try:
-                        similarities.append((temp + " <-> " + lem, round(doc1.similarity(doc2), 2)))
-                    except UserWarning as uw:
-                        print(f"{temp}, {lem}: {uw}")
-            # print(f"body #{i+1}\n", similarities)
-        if len(similarities) != 0:
-            result.append((f"body #{i+1}", max(similarities, key=itemgetter(1))[1]))
-        else:
-            result.append((f"body #{i+1}", 0))
+        if section != "dummy":
+            body = reduce_list(bodies_search(section))  # из вложенных списков генерируется один общий
+            for text in body:
+                if f:
+                    break
+                proc_text = process_text(nlp, text)
+                fact_lemmas = list(filter(None, [elem for elem in proc_text.split()]))
+                similarities = []
+                for patt in patt_lst:
+                    if f:
+                        break
+                    for lem in fact_lemmas:
+                        temp = process_text(nlp, patt)
+                        sim = round(nlp(temp).similarity(nlp(lem)), 2)
+                        similarities.append((temp + " <-> " + lem, sim))
+                        if sim == 1.0:
+                            f = True
+                            break
+                # print(f"body #{i+1}\n", similarities)
+            if len(similarities) != 0:
+                result.append((f"body #{i+1}", max(similarities, key=itemgetter(1))[1]))
+            else:
+                result.append((f"body #{i+1}", 0))
         i += 1
     return dict(result)
 
@@ -127,7 +166,8 @@ def test():
 
     # print(nlp.Defaults.stop_words)
 
-    text1 = process_text(nlp, "исполнители")
+    text1 = process_text(nlp, "Задействованы")
+    print(text1)
     text2 = process_text(nlp, "организация выполнения")
     print(text1, text2)
 
