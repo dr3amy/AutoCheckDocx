@@ -1,6 +1,6 @@
 {
-    "missing partitions": 0,
-    "number of unordered partitions": 0,
+    "sections presence": 1.0,
+    "ordered sections": 1.0,
     "Введение <-> Введение": 1.0,
     "Организация выполнения <-> Организация выполнения": 1.0,
     "Анализ рисков <-> Анализ рисков": 1.0,
