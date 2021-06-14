@@ -78,7 +78,7 @@ def calc_result(headings_check, bodies_check):
     """Результат всех проверок -- линейная комбинация всех показателей"""
 
     missing_partitions = headings_check['sections presence']
-    unordered_number = headings_check['ordered sections']
+    unordered_number = headings_check['sections order']
     if len(headings_check) > 2:
         headings_avg = sum(list(headings_check.values())[2:]) / (len(headings_check) - 2)
     else:

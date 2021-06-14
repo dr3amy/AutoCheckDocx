@@ -104,7 +104,7 @@ def check_headings(nlp, data, pattern):
         max_transpositions = len(fact_headings) * (len(fact_headings) - 1) / 2
         metric = 1 - transpositions / max_transpositions
 
-    result.append(("ordered sections", round(metric, 2)))
+    result.append(("sections order", round(metric, 2)))
     heads_sim = headings_sim(nlp, fact_headings, patt_headings)
     for pair in heads_sim:
         result.append((pair[0] + " <-> " + pair[1][0], pair[1][1]))
