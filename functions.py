@@ -7,7 +7,6 @@ from parse import Parser
 def get_paths(folder):
     """Возрващает список путей к файлам .docx в заданной директории."""
 
-    # folder = os.getcwd()
     paths = []
     for root, dirs, files in os.walk(folder):
         for file in files:
@@ -41,7 +40,7 @@ def get_pattern(filename):
     return data
 
 
-def parse_doc(path_to_parse, path_to_save):
+def parse_doc(path_to_parse, path_to_save=".\\ParsedResults"):
     """Парсинг одного документа по заданному пути"""
 
     doc = get_paragraphs_single(path_to_parse)
@@ -77,8 +76,8 @@ def test_to_json(data, path):
 def calc_result(headings_check, bodies_check):
     """Результат всех проверок -- линейная комбинация всех показателей"""
 
-    missing_partitions = headings_check['sections presence']
-    unordered_number = headings_check['sections order']
+    secs_presence = headings_check['sections presence']
+    secs_order = headings_check['sections order']
     if len(headings_check) > 2:
         headings_avg = sum(list(headings_check.values())[2:]) / (len(headings_check) - 2)
     else:
@@ -88,10 +87,17 @@ def calc_result(headings_check, bodies_check):
     else:
         bodies_avg = 0
 
+    detailed_info = {
+        'sections presence': secs_presence,
+        'sections order': secs_order,
+        'headings average similarity': round(headings_avg, 2),
+        'bodies average similarity': round(bodies_avg, 2)
+    }
+
     values_list = [
-        missing_partitions * 0.4,
-        unordered_number * 0.3,
+        secs_presence * 0.4,
+        secs_order * 0.3,
         headings_avg * 0.2,
         bodies_avg * 0.1
     ]
-    return round(sum(values_list), 2)
+    return detailed_info, str(int(round(sum(values_list), 2) * 100)) + '%'
