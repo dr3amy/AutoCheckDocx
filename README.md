@@ -12,5 +12,7 @@ positional arguments:
 
 optional arguments:
   -h, --help  show this help message and exit
+  
+> python main.py ./docs ./pattern.json
 ```
 Результат проверки сохраняется в папку с документами.
