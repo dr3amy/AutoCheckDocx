@@ -32,7 +32,7 @@ if __name__ == "__main__":
         }
         results.append(json_result)
 
-    with open(args.folder + "\\results.json", 'a', encoding='utf-8') as outfile:
+    with open(args.folder + "\\results.json", 'w', encoding='utf-8') as outfile:
         json.dump(results, outfile, indent=4, ensure_ascii=False)
 
     # filepath = ".\\Кафтанов_1_без_таблицы.docx"

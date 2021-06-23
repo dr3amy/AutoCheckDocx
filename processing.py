@@ -49,15 +49,17 @@ def process_text(nlp, text):
     return " ".join(result)
 
 
-def process_doc(data, pattern):
+def process_doc(nlp, data, pattern):
     """Игнорирование разделов, которые не требуются в шаблоне"""
 
-    patt_headings = list(pattern.keys())
+    # patt_headings = list(pattern.keys())
     fact_sections = []
-    for head in data:
+    for head, patt in zip(data, pattern):
         if isinstance(head, Heading):
-            if head.head in patt_headings:
-                fact_sections.append(head)
+            # if head.head in patt_headings:
+            #     fact_sections.append(head)
+            if nlp(process_text(nlp, head.head)).similarity(nlp(process_text(nlp, patt))) != 0.0:
+                fact_sections.append((head, patt))
     return fact_sections
 
 
@@ -67,11 +69,11 @@ def headings_sim(nlp, fact_headings, patt_headings):
     result = []
     for fact in fact_headings:
         sims = []
-        nlp_fact = nlp(process_text(nlp, fact))
+        nlp_fact = nlp(process_text(nlp, fact[0].head))
         for patt in patt_headings:
             nlp_patt = nlp(process_text(nlp, patt))
             sims.append((patt, round(nlp_fact.similarity(nlp_patt), 2)))
-        result.append((fact,  max(sims, key=itemgetter(1))))
+        result.append((fact[0].head,  max(sims, key=itemgetter(1))))
     return result
 
 
@@ -82,8 +84,9 @@ def check_headings(nlp, data, pattern):
     patt_headings = list(pattern.keys())
     # оставляю только те разделы, которые присутствуют в шаблоне
     # ВАЖНО! в проверку на соответствие так же передаётся список без лишних заголовков
-    proc_data = process_doc(data, pattern)
-    fact_headings = [sect.head for sect in proc_data]
+    # proc_data = process_doc(nlp, data, pattern)
+    # fact_headings = [sect.head for sect in proc_data]
+    fact_headings = process_doc(nlp, data, pattern)
     if len(fact_headings) > 0:
         present_headings = round(len(fact_headings) / len(patt_headings), 2)
     else:
@@ -91,14 +94,15 @@ def check_headings(nlp, data, pattern):
     result.append(("sections presence", present_headings))
 
     metric = 0
+    # metric = 1.0
     transpositions = 0
     if len(fact_headings) > 1:
         p = 0
         q = 0
         for i in range(0, len(fact_headings) - 1):
-            p = patt_headings.index(fact_headings[i])
+            p = patt_headings.index(fact_headings[i][1])
             for j in range(i + 1, len(fact_headings)):
-                q = patt_headings.index(fact_headings[j])
+                q = patt_headings.index(fact_headings[j][1])
                 if p > q:
                     transpositions += 1
         max_transpositions = len(fact_headings) * (len(fact_headings) - 1) / 2
@@ -112,15 +116,15 @@ def check_headings(nlp, data, pattern):
     return dict(result)
 
 
-def order_sections(data, pattern):
+def order_sections(nlp, data, pattern):
     """Возвращает упорядоченный список разделов документа"""
 
     patt_headings = list(pattern.keys())
-    proc_data = process_doc(data, pattern)
+    proc_data = process_doc(nlp, data, pattern)
     ordered_data = ["dummy"] * len(patt_headings)
     for head in proc_data:
-        ind = patt_headings.index(head.head)
-        ordered_data[ind] = head
+        ind = patt_headings.index(head[1])
+        ordered_data[ind] = head[0]  # !!!!!!!!!!!!!
     return ordered_data
 
 
@@ -129,7 +133,7 @@ def check_bodies(nlp, data, pattern):
 
     result = []
     patt_bodies = list(pattern.values())
-    ordered_data = order_sections(data, pattern)
+    ordered_data = order_sections(nlp, data, pattern)
     i = 0
     for section in ordered_data:
         f = False
@@ -166,9 +170,9 @@ def test():
 
     # print(nlp.Defaults.stop_words)
 
-    text1 = process_text(nlp, "Задействованы")
+    text1 = process_text(nlp, "Основные этапы и вехи")
     print(text1)
-    text2 = process_text(nlp, "организация выполнения")
+    text2 = process_text(nlp, "Этапы и вехи")
     print(text1, text2)
 
     doc1 = nlp(text1)
